@@ -100,11 +100,13 @@ public class MainActivity extends AppCompatActivity {
 
             //Setup location component options
             LocationComponentOptions locationComponentOptions = LocationComponentOptions.builder(this)
+                    .foregroundDrawable(R.drawable.wizard)
                     .build();
 
             //Setup location component activation options
             LocationComponentActivationOptions locationComponentActivationOptions = LocationComponentActivationOptions
                     .builder(this, mapStyle)
+                    .locationComponentOptions(locationComponentOptions)
                     .build();
 
             //Activate location component
