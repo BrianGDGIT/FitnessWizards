@@ -9,6 +9,9 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -37,41 +40,24 @@ public class MainActivity extends AppCompatActivity {
 
     private Pedometer pedometer;
 
-    private MapView mapView;
-    private MapboxMap map;
-    private Style mapStyle;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //Mapbox - Get instancemust be done before inflating the View
-        Mapbox.getInstance(this, "pk.eyJ1IjoiYnJpYW5jcyIsImEiOiJjanpidzFkdDQwMDllM21zYTR2cHhlOHM2In0.ugYZLxfaanhI5w3WeGJzwA");
         setContentView(R.layout.activity_main);
 
-        //Mapbox
-        mapView = findViewById(R.id.mapView);
-        mapView.onCreate(savedInstanceState);
-        mapView.getMapAsync(new OnMapReadyCallback() {
-            @Override
-            public void onMapReady(@NonNull MapboxMap mapboxMap) {
-                //Save reference to Map for later use
-                map = mapboxMap;
+        //Initiate fragment manager
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction transaction = fragmentManager.beginTransaction();
 
-                mapboxMap.setStyle(Style.MAPBOX_STREETS, new Style.OnStyleLoaded(){
-                    @Override
-                    public void onStyleLoaded(@NonNull Style style) {
-                        // Map is set up and the style has loaded. Now you can add data or make other map adjustments
+        //Replace view with fragment
+        Fragment mapFragment = new MapFragment();
+        transaction.replace(R.id.fragment_container, mapFragment);
+        transaction.addToBackStack(null);
 
-                        //Save reference to map style
-                        mapStyle = style;
-
-                        enableLocationComponent();
-
-                    }
-                });
-            }
-        });
+        //Commit fragment transaction
+        transaction.commit();
 
         //Get layout elements
         stepsSinceOpenedText = findViewById(R.id.main_opened_steps_taken);
@@ -92,83 +78,11 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private void enableLocationComponent(){
-        //Check to see if permisions are enabled
-        if(ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
-            //Get location component
-            LocationComponent locationComponent = map.getLocationComponent();
-
-            //Setup location component options
-            LocationComponentOptions locationComponentOptions = LocationComponentOptions.builder(this)
-                    .foregroundDrawable(R.drawable.wizard)
-                    .build();
-
-            //Setup location component activation options
-            LocationComponentActivationOptions locationComponentActivationOptions = LocationComponentActivationOptions
-                    .builder(this, mapStyle)
-                    .locationComponentOptions(locationComponentOptions)
-                    .build();
-
-            //Activate location component
-            locationComponent.activateLocationComponent(locationComponentActivationOptions);
-            //Enable to make visible
-            locationComponent.setLocationComponentEnabled(true);
-            locationComponent.setCameraMode(CameraMode.TRACKING);
-            locationComponent.setRenderMode(RenderMode.COMPASS);
-        }else{
-            //Show dialog
-            ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                    MY_PERMISSIONS_REQUEST_ACCESSFINELOCATION);
-            enableLocationComponent();
-        }
-
-
-
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-        mapView.onStart();
-    }
 
     @Override
     protected void onResume() {
         super.onResume();
         pedometer.registerSensorListener();
-        mapView.onResume();
     }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        mapView.onPause();
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        mapView.onStop();
-    }
-
-    @Override
-    public void onLowMemory() {
-        super.onLowMemory();
-        mapView.onLowMemory();
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        mapView.onDestroy();
-    }
-
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        mapView.onSaveInstanceState(outState);
-    }
-
 
 }
