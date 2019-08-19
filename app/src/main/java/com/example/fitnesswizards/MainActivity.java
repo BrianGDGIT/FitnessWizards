@@ -16,6 +16,8 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.mapbox.android.core.permissions.PermissionsManager;
@@ -40,6 +42,13 @@ public class MainActivity extends AppCompatActivity {
 
     private Pedometer pedometer;
 
+    //Buttons
+    private Button characterButton;
+    private Button exploreButton;
+
+    //Initiate fragment manager
+    final FragmentManager fragmentManager = getSupportFragmentManager();
+
 
 
     @Override
@@ -47,17 +56,30 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        //Initiate fragment manager
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        FragmentTransaction transaction = fragmentManager.beginTransaction();
-
-        //Replace view with fragment
+        //Set initial fragment in view
         Fragment mapFragment = new MapFragment();
-        transaction.replace(R.id.fragment_container, mapFragment);
-        transaction.addToBackStack(null);
+        commitTransaction(mapFragment);
 
-        //Commit fragment transaction
-        transaction.commit();
+        //Buttons
+        characterButton = (Button) findViewById(R.id.character_button);
+        characterButton.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                //Commit character fragment
+                Fragment characterFragment = new CharacterFragment();
+                commitTransaction(characterFragment);
+            }
+        });
+
+        exploreButton = (Button) findViewById(R.id.explore_button);
+        exploreButton.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                //Commit character fragment
+                Fragment characterFragment = new MapFragment();
+                commitTransaction(characterFragment);
+            }
+        });
 
         //Get layout elements
         stepsSinceOpenedText = findViewById(R.id.main_opened_steps_taken);
@@ -76,6 +98,16 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    private void commitTransaction(Fragment fragment){
+        //Replace View with fragment
+        FragmentTransaction transaction = fragmentManager.beginTransaction();
+        transaction.replace(R.id.fragment_container, fragment);
+        transaction.addToBackStack(null);
+
+        //Commit transaction
+        transaction.commit();
     }
 
 

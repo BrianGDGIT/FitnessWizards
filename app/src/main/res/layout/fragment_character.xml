@@ -10,8 +10,9 @@
 
     <ImageView
         android:id="@+id/imageView"
+        android:layout_marginTop="100dp"
         android:layout_width="match_parent"
-        android:layout_height="171dp"
+        android:layout_height="140dp"
         android:src="@drawable/tempcharacter" />
 
 </FrameLayout>
