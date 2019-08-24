@@ -12,6 +12,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.example.fitnesswizards.db.Database;
+
 public class MainActivity extends AppCompatActivity {
     //Permissions constant
     private static final int MY_PERMISSIONS_REQUEST_ACCESSFINELOCATION = 1;
