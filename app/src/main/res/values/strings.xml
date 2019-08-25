@@ -3,6 +3,7 @@
     <string name="experience_text">Experience:</string>
     <string name="level_text">Level:</string>
     <string name="skills_text">Skills</string>
+    <string name="stats_text">Stats</string>
     <string name="casting_text">Casting:</string>
     <string name="evocation_text">Evocation:</string>
     <string name="necromancy_text">Necromancy:</string>
