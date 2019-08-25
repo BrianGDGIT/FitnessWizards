@@ -99,4 +99,7 @@ public class MainActivity extends AppCompatActivity {
         pedometer.registerSensorListener();
     }
 
+    public Database getDatabase(){
+        return Database.getDatabase(this);
+    }
 }

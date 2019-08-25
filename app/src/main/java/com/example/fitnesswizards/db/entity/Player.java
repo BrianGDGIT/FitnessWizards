@@ -10,17 +10,32 @@ import androidx.room.PrimaryKey;
 public class Player extends Creature {
     @PrimaryKey
     @NonNull
-    private String name;
+    private String playerName;
 
     //Player Stats
-    int experience = 0;
-    int kills = 0;
+    private int playerExperience = 0;
+    private int playerKills = 0;
 
-    public void setName(String name){
-        this.name = name;
+    public void setPlayerName(String name){
+        playerName = name;
     }
 
-    public String getName(){
-        return name;
+    public String getPlayerName(){
+        return playerName;
+    }
+
+    public void setPlayerExperience(int experience){
+        playerExperience = experience;
+    }
+
+    public int getPlayerExperience(){
+        return playerExperience;
+    }
+
+    public void setPlayerKills(int kills){
+        playerKills = kills;
+    }
+    public int getPlayerKills(){
+        return playerKills;
     }
 }

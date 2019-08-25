@@ -1,9 +1,9 @@
 package com.example.fitnesswizards.db.entity;
 
 public abstract class Creature {
-    String name;
-    int level;
-    int hp;
-    int mana;
-    int experienceValue;
+    public String name;
+    public int level;
+    public int hp;
+    public int mana;
+    public int experienceValue;
 }

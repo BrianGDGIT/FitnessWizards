@@ -2,11 +2,13 @@ package com.example.fitnesswizards.db.dao;
 
 import com.example.fitnesswizards.db.entity.Player;
 
+import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.Query;
 import androidx.room.Update;
 
+@Dao
 public interface PlayerDao {
     @Insert
     void insert(Player player);
