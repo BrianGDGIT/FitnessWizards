@@ -19,10 +19,12 @@ public class MainActivity extends AppCompatActivity {
     private static final int MY_PERMISSIONS_REQUEST_ACCESSFINELOCATION = 1;
 
     private static final String TAG = MainActivity.class.getSimpleName();
+
     private TextView stepsSinceOpenedText;
     private TextView totalStepsTakenText;
 
     private Pedometer pedometer;
+
 
     //Buttons
     private Button characterButton;
@@ -80,6 +82,8 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+
+
     }
 
     private void commitTransaction(Fragment fragment){
@@ -93,13 +97,14 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+
+    public Database getDatabase(){
+        return Database.getDatabase(this);
+    }
+
     @Override
     protected void onResume() {
         super.onResume();
         pedometer.registerSensorListener();
-    }
-
-    public Database getDatabase(){
-        return Database.getDatabase(this);
     }
 }

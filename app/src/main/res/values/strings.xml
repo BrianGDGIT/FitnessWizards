@@ -2,4 +2,9 @@
     <string name="app_name">Fitness Wizards</string>
     <string name="experience_text">Experience:</string>
     <string name="level_text">Level:</string>
+    <string name="skills_text">Skills</string>
+    <string name="casting_text">Casting:</string>
+    <string name="evocation_text">Evocation:</string>
+    <string name="necromancy_text">Necromancy:</string>
+    <string name="divination_text">Divination:</string>
 </resources>
