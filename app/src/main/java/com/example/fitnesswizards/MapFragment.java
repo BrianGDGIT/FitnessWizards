@@ -44,6 +44,9 @@ public class MapFragment extends Fragment {
     private MapboxMap map;
     private Style mapStyle;
 
+    //Map images
+    private static final String Book_Marker_Image1 = "book_custom-marker";
+
 
     public MapFragment() {
         // Required empty public constructor
@@ -68,7 +71,7 @@ public class MapFragment extends Fragment {
                 //Save reference to Map for later use
                 map = mapboxMap;
 
-                mapboxMap.setStyle(Style.MAPBOX_STREETS, new Style.OnStyleLoaded(){
+                mapboxMap.setStyle(new Style.Builder().fromUri("mapbox://styles/briancs/ck9m0yeja0lrx1intmbmdus2g"), new Style.OnStyleLoaded(){
                     @Override
                     public void onStyleLoaded(@NonNull Style style) {
                         // Map is set up and the style has loaded. Now you can add data or make other map adjustments
