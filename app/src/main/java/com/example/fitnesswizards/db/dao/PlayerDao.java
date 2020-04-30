@@ -2,6 +2,7 @@ package com.example.fitnesswizards.db.dao;
 
 import com.example.fitnesswizards.db.entity.Player;
 
+import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
@@ -21,4 +22,7 @@ public interface PlayerDao {
 
     @Query("DELETE FROM players")
     void deleteAll();
+
+    @Query("SELECT * FROM players")
+    LiveData<Player> getPlayer();
 }
