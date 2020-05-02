@@ -1,5 +1,7 @@
 package com.example.fitnesswizards;
 
+import android.os.AsyncTask;
+
 import androidx.lifecycle.LiveData;
 
 import com.example.fitnesswizards.db.Database;
@@ -32,4 +34,21 @@ public class Repository {
         return player;
     }
 
+    //Update Player
+    public void updatePlayer(Player player) { new updatePlayerTask(playerDao).execute(player);}
+
+    //Tasks
+    private static class updatePlayerTask extends AsyncTask<Player, Void, Void>{
+        private PlayerDao dao;
+
+        updatePlayerTask(PlayerDao dao){
+            this.dao = dao;
+        }
+
+        @Override
+        protected Void doInBackground(final Player... players) {
+            dao.update(players[0]);
+            return null;
+        }
+    }
 }

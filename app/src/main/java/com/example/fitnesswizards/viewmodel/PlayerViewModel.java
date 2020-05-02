@@ -23,6 +23,9 @@ public class PlayerViewModel extends AndroidViewModel {
     public LiveData<Player> getPlayer(){
         return playerLiveData;
     }
+    public void update(Player player) {
+        repository.updatePlayer(player);
+    }
 
 
 }
