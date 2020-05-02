@@ -9,6 +9,7 @@ import androidx.lifecycle.ViewModelProviders;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.example.fitnesswizards.db.entity.Player;
@@ -19,6 +20,7 @@ import com.example.fitnesswizards.viewmodel.PlayerViewModel;
  */
 public class CharacterFragment extends Fragment {
     private TextView playerLevelTextView;
+    private ProgressBar playerExperienceBar;
 
     //Fragment View
     View view;
@@ -37,7 +39,10 @@ public class CharacterFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.fragment_character, container, false);
+
+        //Set layout elements
         playerLevelTextView = view.findViewById(R.id.player_level_textView);
+        playerExperienceBar = view.findViewById(R.id.experienceBar);
         initPlayerView();
 
         return view;
@@ -52,7 +57,9 @@ public class CharacterFragment extends Fragment {
         playerViewModel.getPlayer().observe(this, new Observer<Player>() {
             @Override
             public void onChanged(Player player) {
-                playerLevelTextView.setText(Integer.toString(player.getPlayerLevel()));
+                int playerLevel = player.getPlayerLevel();
+                playerLevelTextView.setText(Integer.toString(playerLevel));
+                playerExperienceBar.setProgress((player.getPlayerExperience() / playerLevel));
             }
         });
         //Connect with data end

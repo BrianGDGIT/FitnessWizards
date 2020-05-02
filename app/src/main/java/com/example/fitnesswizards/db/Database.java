@@ -6,12 +6,8 @@ import android.os.AsyncTask;
 import com.example.fitnesswizards.db.dao.PlayerDao;
 import com.example.fitnesswizards.db.entity.Player;
 
-import androidx.annotation.NonNull;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
-import androidx.sqlite.db.SupportSQLiteDatabase;
-
-import java.util.concurrent.ExecutionException;
 
 
 //Define entities(tables) in the database
@@ -55,6 +51,8 @@ public abstract class Database extends RoomDatabase {
             if(playerDao.doesPlayerExist() == null){
                 Player player = new Player();
                 player.setPlayerName("Larloch");
+                player.setPlayerExperience(75);
+                player.setPlayerLevel(2);
                 playerDao.insert(player);
             }
             return null;
