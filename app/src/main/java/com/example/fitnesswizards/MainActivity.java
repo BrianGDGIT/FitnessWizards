@@ -7,12 +7,15 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.core.content.ContextCompat;
 import androidx.appcompat.app.AppCompatActivity;
+
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
 import com.example.fitnesswizards.db.Database;
+import com.example.fitnesswizards.views.CharacterCreationActivity;
 
 public class MainActivity extends AppCompatActivity {
     //Permissions constant
@@ -39,6 +42,10 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        //Create Player
+        Database.getDatabase(this);
+        Database.getDatabase(this).createPlayer();
 
         //Set initial fragment in view
         Fragment mapFragment = new MapFragment();
@@ -107,4 +114,5 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
         pedometer.registerSensorListener();
     }
+
 }

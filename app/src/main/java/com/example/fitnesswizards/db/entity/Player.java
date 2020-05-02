@@ -7,27 +7,38 @@ import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
 @Entity(tableName = "players")
-public class Player extends Creature {
-    @PrimaryKey
+public class Player {
+    @PrimaryKey(autoGenerate = true)
     @NonNull
-    private String playerName;
+    private int playerID;
+
 
     //Player Stats
+    private String playerName;
     private int playerExperience = 0;
     private int playerKills = 0;
+    private int playerLevel = 1;
 
+    public void setPlayerID(int id){
+        playerID = id;
+    }
+    public int getPlayerID(){
+        return playerID;
+    }
     public void setPlayerName(String name){
         playerName = name;
     }
-
     public String getPlayerName(){
         return playerName;
     }
 
+    public void setPlayerLevel(int level) { playerLevel = level; }
+    public int getPlayerLevel() { return playerLevel;}
+
+
     public void setPlayerExperience(int experience){
         playerExperience = experience;
     }
-
     public int getPlayerExperience(){
         return playerExperience;
     }
