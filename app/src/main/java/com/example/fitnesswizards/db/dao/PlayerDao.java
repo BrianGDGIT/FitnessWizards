@@ -26,7 +26,7 @@ public interface PlayerDao {
     void deleteAll();
 
     @Query("SELECT * FROM players")
-    LiveData<Player> getPlayer();
+    LiveData<Player> getPlayerLiveData();
 
     @Query("SELECT * FROM players")
     Player doesPlayerExist();

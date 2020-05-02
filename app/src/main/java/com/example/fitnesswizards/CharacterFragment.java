@@ -54,12 +54,14 @@ public class CharacterFragment extends Fragment {
                 .get(PlayerViewModel.class);
 
         //Add Player Data Observer
-        playerViewModel.getPlayer().observe(this, new Observer<Player>() {
+        playerViewModel.getPlayerLiveData().observe(this, new Observer<Player>() {
             @Override
             public void onChanged(Player player) {
                 int playerLevel = player.getPlayerLevel();
+                int playerExperience = player.getPlayerExperience();
+
                 playerLevelTextView.setText(Integer.toString(playerLevel));
-                playerExperienceBar.setProgress((player.getPlayerExperience() / playerLevel));
+                playerExperienceBar.setProgress((playerExperience / playerLevel));
             }
         });
         //Connect with data end

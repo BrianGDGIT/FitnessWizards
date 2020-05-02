@@ -17,10 +17,10 @@ public class PlayerViewModel extends AndroidViewModel {
     public PlayerViewModel(Application application){
         super(application);
         repository = Repository.getRepository(Database.getDatabase(application));
-        playerLiveData = repository.getPlayer();
+        playerLiveData = repository.getPlayerLiveData();
     }
 
-    public LiveData<Player> getPlayer(){
+    public LiveData<Player> getPlayerLiveData(){
         return playerLiveData;
     }
     public void update(Player player) {

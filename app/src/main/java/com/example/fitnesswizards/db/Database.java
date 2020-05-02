@@ -11,7 +11,7 @@ import androidx.room.RoomDatabase;
 
 
 //Define entities(tables) in the database
-@androidx.room.Database(entities = {Player.class}, version = 1)
+@androidx.room.Database(entities = {Player.class}, version = 2)
 public abstract class Database extends RoomDatabase {
     //Define DAOS
     public abstract PlayerDao playerDao();
@@ -51,8 +51,6 @@ public abstract class Database extends RoomDatabase {
             if(playerDao.doesPlayerExist() == null){
                 Player player = new Player();
                 player.setPlayerName("Larloch");
-                player.setPlayerExperience(75);
-                player.setPlayerLevel(2);
                 playerDao.insert(player);
             }
             return null;

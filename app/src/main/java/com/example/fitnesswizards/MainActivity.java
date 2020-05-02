@@ -7,6 +7,8 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.core.content.ContextCompat;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -15,6 +17,8 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.example.fitnesswizards.db.Database;
+import com.example.fitnesswizards.db.entity.Player;
+import com.example.fitnesswizards.viewmodel.PlayerViewModel;
 import com.example.fitnesswizards.views.CharacterCreationActivity;
 
 public class MainActivity extends AppCompatActivity {
@@ -27,6 +31,10 @@ public class MainActivity extends AppCompatActivity {
     private TextView totalStepsTakenText;
 
     private Pedometer pedometer;
+
+    //Used to save LiveData into player object for other uses
+    private PlayerViewModel playerViewModel;
+    private Player player;
 
 
     //Buttons
@@ -78,6 +86,9 @@ public class MainActivity extends AppCompatActivity {
 
         stepsSinceOpenedText.setText("0");
 
+        //Connect with Data
+        connectWithData();
+
         //Create Pedometer object
         pedometer = new Pedometer(this);
         //Setup listener for Pedometer object
@@ -86,6 +97,15 @@ public class MainActivity extends AppCompatActivity {
             public void onSensorChanged(int stepsSinceOpened, int stepsTotal) {
                 stepsSinceOpenedText.setText(String.valueOf(stepsSinceOpened));
                 totalStepsTakenText.setText(String.valueOf(stepsTotal));
+
+                //Update Player with change in steps to xp
+                if(player != null){
+                    player.setPlayerExperience(stepsSinceOpened);
+                    if(player.getPlayerExperience() / player.getPlayerLevel() == 100){
+                        player.setPlayerLevel(player.getPlayerLevel() + 1);
+                    }
+                    playerViewModel.update(player);
+                }
             }
         });
 
@@ -103,6 +123,19 @@ public class MainActivity extends AppCompatActivity {
         transaction.commit();
     }
 
+    private void connectWithData(){
+        //Connect With data
+        playerViewModel = ViewModelProviders.of(this)
+                .get(PlayerViewModel.class);
+
+        //Add player data observer
+        playerViewModel.getPlayerLiveData().observe(this, new Observer<Player>(){
+            @Override
+            public void onChanged(Player p) {
+                player = p;
+            }
+        });
+    }
 
 
     public Database getDatabase(){

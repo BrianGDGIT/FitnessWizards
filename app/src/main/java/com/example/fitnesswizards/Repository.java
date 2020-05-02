@@ -12,12 +12,13 @@ public class Repository {
     private static Repository repository;
     private PlayerDao playerDao;
 
-    private LiveData<Player> player;
+    private LiveData<Player> playerLiveData;
+    private static Player player;
 
     private Repository(Database db){
         playerDao = db.playerDao();
 
-        player = playerDao.getPlayer();
+        playerLiveData = playerDao.getPlayerLiveData();
     }
 
     //Singleton
@@ -30,8 +31,8 @@ public class Repository {
     }
 
     //Getters from PlayerViewModel
-    public LiveData<Player> getPlayer(){
-        return player;
+    public LiveData<Player> getPlayerLiveData(){
+        return playerLiveData;
     }
 
     //Update Player
@@ -51,4 +52,5 @@ public class Repository {
             return null;
         }
     }
+
 }
