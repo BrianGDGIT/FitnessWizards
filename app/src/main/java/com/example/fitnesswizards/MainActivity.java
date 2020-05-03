@@ -36,6 +36,9 @@ public class MainActivity extends AppCompatActivity {
     private PlayerViewModel playerViewModel;
     private Player player;
 
+    //Used for xp calculation
+    int stepOffset = 0;
+
 
     //Buttons
     private Button characterButton;
@@ -86,7 +89,7 @@ public class MainActivity extends AppCompatActivity {
 
         stepsSinceOpenedText.setText("0");
 
-        //Connect with Data
+        //Connect with Data in PlayerViewModel
         connectWithData();
 
         //Create Pedometer object
@@ -95,14 +98,21 @@ public class MainActivity extends AppCompatActivity {
         pedometer.setPodometerListener(new Pedometer.PedometerListener(){
             @Override
             public void onSensorChanged(int stepsSinceOpened, int stepsTotal) {
+
                 stepsSinceOpenedText.setText(String.valueOf(stepsSinceOpened));
                 totalStepsTakenText.setText(String.valueOf(stepsTotal));
 
                 //Update Player with change in steps to xp
                 if(player != null){
-                    player.setPlayerExperience(stepsSinceOpened);
-                    if(player.getPlayerExperience() / player.getPlayerLevel() == 100){
-                        player.setPlayerLevel(player.getPlayerLevel() + 1);
+                    int playerExperience = player.getPlayerExperience();
+                    int playerLevel = player.getPlayerLevel();
+
+                    player.setPlayerExperience(playerExperience + (stepsSinceOpened - stepOffset));
+                    //Set offset for next round of steps for xp calculation
+                    stepOffset = stepsSinceOpened;
+
+                    if(playerExperience / player.getPlayerLevel() >= 100){
+                        player.setPlayerLevel(playerLevel + 1);
                     }
                     playerViewModel.update(player);
                 }

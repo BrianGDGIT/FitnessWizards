@@ -20,6 +20,7 @@ import com.example.fitnesswizards.viewmodel.PlayerViewModel;
  */
 public class CharacterFragment extends Fragment {
     private TextView playerLevelTextView;
+    private TextView playerExperienceTextView;
     private ProgressBar playerExperienceBar;
 
     //Fragment View
@@ -43,6 +44,7 @@ public class CharacterFragment extends Fragment {
         //Set layout elements
         playerLevelTextView = view.findViewById(R.id.player_level_textView);
         playerExperienceBar = view.findViewById(R.id.experienceBar);
+        playerExperienceTextView = view.findViewById(R.id.player_experience_textView);
         initPlayerView();
 
         return view;
@@ -61,6 +63,7 @@ public class CharacterFragment extends Fragment {
                 int playerExperience = player.getPlayerExperience();
 
                 playerLevelTextView.setText(Integer.toString(playerLevel));
+                playerExperienceTextView.setText(Integer.toString(playerExperience));
                 playerExperienceBar.setProgress((playerExperience / playerLevel));
             }
         });
