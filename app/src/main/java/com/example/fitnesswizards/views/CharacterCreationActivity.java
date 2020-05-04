@@ -18,7 +18,7 @@ public class CharacterCreationActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_character_creation);
 
-        Button createButton = findViewById(R.id.create_button);
+        Button createButton = findViewById(R.id.creation_create_button);
         createButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -35,7 +35,7 @@ public class CharacterCreationActivity extends AppCompatActivity {
             }
         });
 
-        Button cancelButton = findViewById(R.id.cancel_button);
+        Button cancelButton = findViewById(R.id.creation_cancel_button);
         cancelButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

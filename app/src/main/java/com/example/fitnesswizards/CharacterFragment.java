@@ -19,6 +19,8 @@ import com.example.fitnesswizards.viewmodel.PlayerViewModel;
  * A simple {@link Fragment} subclass.
  */
 public class CharacterFragment extends Fragment {
+    private TextView playerNameTextView;
+    private TextView playerClassTextView;
     private TextView playerLevelTextView;
     private TextView playerExperienceTextView;
     private ProgressBar playerExperienceBar;
@@ -42,6 +44,8 @@ public class CharacterFragment extends Fragment {
         view = inflater.inflate(R.layout.fragment_character, container, false);
 
         //Set layout elements
+        playerNameTextView = view.findViewById(R.id.player_name_textView);
+        playerClassTextView = view.findViewById(R.id.player_class_textView);
         playerLevelTextView = view.findViewById(R.id.player_level_textView);
         playerExperienceBar = view.findViewById(R.id.experienceBar);
         playerExperienceTextView = view.findViewById(R.id.player_experience_textView);
@@ -59,9 +63,13 @@ public class CharacterFragment extends Fragment {
         playerViewModel.getPlayerLiveData().observe(this, new Observer<Player>() {
             @Override
             public void onChanged(Player player) {
+                String playerName = player.getPlayerName();
+                String playerClass = player.getPlayerClass();
                 int playerLevel = player.getPlayerLevel();
                 int playerExperience = player.getPlayerExperience();
 
+                playerNameTextView.setText(playerName);
+                playerClassTextView.setText(playerClass);
                 playerLevelTextView.setText(Integer.toString(playerLevel));
                 playerExperienceTextView.setText(Integer.toString(playerExperience));
                 playerExperienceBar.setProgress((playerExperience / playerLevel));

@@ -11,7 +11,7 @@ import androidx.room.RoomDatabase;
 
 
 //Define entities(tables) in the database
-@androidx.room.Database(entities = {Player.class}, version = 2)
+@androidx.room.Database(entities = {Player.class}, version = 1)
 public abstract class Database extends RoomDatabase {
     //Define DAOS
     public abstract PlayerDao playerDao();
@@ -35,11 +35,11 @@ public abstract class Database extends RoomDatabase {
         return INSTANCE;
     }
 
-    public void createPlayer(){
-       new CreatePlayer(INSTANCE).execute();
+    public void createPlayer(Player player){
+       new CreatePlayer(INSTANCE).execute(player);
     }
 
-    private static class CreatePlayer extends AsyncTask<Void, Void, Void>{
+    private static class CreatePlayer extends AsyncTask<Player, Void, Void>{
         private final PlayerDao playerDao;
 
         CreatePlayer(Database db){
@@ -47,11 +47,13 @@ public abstract class Database extends RoomDatabase {
         }
 
         @Override
-        protected Void doInBackground(Void... voids) {
+        protected Void doInBackground(Player... players) {
             if(playerDao.doesPlayerExist() == null){
-                Player player = new Player();
-                player.setPlayerName("Larloch");
-                playerDao.insert(player);
+                if(players[0] != null){
+                    Player player = players[0];
+                    playerDao.insert(player);
+                }
+
             }
             return null;
         }

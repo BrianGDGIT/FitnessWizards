@@ -55,8 +55,10 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         //Create Player
-        Database.getDatabase(this);
-        Database.getDatabase(this).createPlayer();
+        Player createdPlayer = new Player();
+        createdPlayer.setPlayerName(getIntent().getStringExtra("Player Name"));
+        createdPlayer.setPlayerClass(getIntent().getStringExtra("Player Class"));
+        Database.getDatabase(this).createPlayer(createdPlayer);
 
         //Set initial fragment in view
         Fragment mapFragment = new MapFragment();
