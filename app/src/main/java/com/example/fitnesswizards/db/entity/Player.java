@@ -15,6 +15,7 @@ public class Player {
 
     //Player Stats
     private String playerName;
+    private String playerClass;
     private int playerExperience = 0;
     private int playerKills = 0;
     private int playerLevel = 1;
@@ -31,10 +32,8 @@ public class Player {
     public String getPlayerName(){
         return playerName;
     }
-
-    public void setPlayerLevel(int level) { playerLevel = level; }
-    public int getPlayerLevel() { return playerLevel;}
-
+    public void setPlayerClass(String pClass) {playerClass = pClass; }
+    public String getPlayerClass() { return playerClass; }
 
     public void setPlayerExperience(int experience){
         playerExperience = experience;
@@ -49,4 +48,7 @@ public class Player {
     public int getPlayerKills(){
         return playerKills;
     }
+
+    public void setPlayerLevel(int level) { playerLevel = level; }
+    public int getPlayerLevel() { return playerLevel;}
 }
