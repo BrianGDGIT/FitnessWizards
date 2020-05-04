@@ -2,6 +2,10 @@
     <string name="app_name">Fitness Wizards</string>
     <string name="create_character">Create Character</string>
     <string name="load_character">Load Character</string>
+    <string name="create_name">Name: </string>
+    <string name="create_class">Class: </string>
+    <string name="create">Create</string>
+    <string name="cancel">Cancel</string>
     <string name="experience_text">Experience:</string>
     <string name="level_text">Level:</string>
     <string name="skills_text">Skills</string>
