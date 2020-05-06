@@ -25,6 +25,8 @@ public class CharacterFragment extends Fragment {
     private TextView playerExperienceTextView;
     private ProgressBar playerExperienceBar;
 
+    private int PLAYERLEVELEXPREQ = 100;
+
     //Fragment View
     View view;
 
@@ -72,7 +74,7 @@ public class CharacterFragment extends Fragment {
                 playerClassTextView.setText(playerClass);
                 playerLevelTextView.setText(Integer.toString(playerLevel));
                 playerExperienceTextView.setText(Integer.toString(playerExperience));
-                playerExperienceBar.setProgress((playerExperience / playerLevel));
+                playerExperienceBar.setProgress((playerExperience / PLAYERLEVELEXPREQ));
             }
         });
         //Connect with data end

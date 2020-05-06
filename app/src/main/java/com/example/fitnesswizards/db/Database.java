@@ -39,6 +39,8 @@ public abstract class Database extends RoomDatabase {
        new CreatePlayer(INSTANCE).execute(player);
     }
 
+
+
     private static class CreatePlayer extends AsyncTask<Player, Void, Void>{
         private final PlayerDao playerDao;
 
