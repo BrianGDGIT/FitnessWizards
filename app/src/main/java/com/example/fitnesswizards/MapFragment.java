@@ -3,6 +3,7 @@ package com.example.fitnesswizards;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
@@ -13,6 +14,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.mapbox.geojson.Feature;
+import com.mapbox.geojson.FeatureCollection;
+import com.mapbox.geojson.Point;
 import com.mapbox.mapboxsdk.Mapbox;
 import com.mapbox.mapboxsdk.location.LocationComponent;
 import com.mapbox.mapboxsdk.location.LocationComponentActivationOptions;
@@ -23,6 +27,12 @@ import com.mapbox.mapboxsdk.maps.MapView;
 import com.mapbox.mapboxsdk.maps.MapboxMap;
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback;
 import com.mapbox.mapboxsdk.maps.Style;
+import com.mapbox.mapboxsdk.style.layers.PropertyFactory;
+import com.mapbox.mapboxsdk.style.layers.SymbolLayer;
+import com.mapbox.mapboxsdk.style.sources.GeoJsonSource;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -45,6 +55,7 @@ public class MapFragment extends Fragment {
     private Style mapStyle;
 
     //Map images
+    private static final String MARKER_SOURCE = "markers-source";
     private static final String Book_Marker_Image1 = "book_custom-marker";
 
 
@@ -76,11 +87,14 @@ public class MapFragment extends Fragment {
                     public void onStyleLoaded(@NonNull Style style) {
                         // Map is set up and the style has loaded. Now you can add data or make other map adjustments
 
+                        //Map markers implementation, loading images into map style
+                        style.addImage(Book_Marker_Image1, BitmapFactory.decodeResource(MapFragment.this.getResources(), R.drawable.book_02f));
+                        addMarkers(style);
+
                         //Save reference to map style
                         mapStyle = style;
 
                         enableLocationComponent();
-
                     }
                 });
             }
@@ -121,6 +135,28 @@ public class MapFragment extends Fragment {
 
 
 
+    }
+
+    private void addMarkers(@NonNull Style loadedMapStyle){
+        List<Feature> features = new ArrayList<>();
+
+        /* Source: A data source specifies the geographic coordinate where the image marker gets placed. */
+        features.add(Feature.fromGeometry(Point.fromLngLat(-121.7847, 37.9901)));
+
+        loadedMapStyle.addSource(new GeoJsonSource(MARKER_SOURCE, FeatureCollection.fromFeatures(features)));
+
+        /* Style layer: A style layer ties together the source and
+        image and specifies how they are displayed on the map. */
+        loadedMapStyle.addLayer(new SymbolLayer("markers-style-layer", MARKER_SOURCE)
+                .withProperties(
+                        PropertyFactory.iconAllowOverlap(true),
+                        PropertyFactory.iconIgnorePlacement(true),
+                        PropertyFactory.iconImage(Book_Marker_Image1),
+                        // Adjust the second number of the Float array based on the height of your marker image.
+                        // This is because the bottom of the marker should be anchored to the coordinate point, rather
+                        // than the middle of the marker being the anchor point on the map.
+                        PropertyFactory.iconOffset(new Float[] {0f, -52f})
+                ));
     }
 
     @Override
