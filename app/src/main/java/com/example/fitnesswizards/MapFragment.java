@@ -18,6 +18,7 @@ import com.mapbox.geojson.Feature;
 import com.mapbox.geojson.FeatureCollection;
 import com.mapbox.geojson.Point;
 import com.mapbox.mapboxsdk.Mapbox;
+import com.mapbox.mapboxsdk.camera.CameraPosition;
 import com.mapbox.mapboxsdk.location.LocationComponent;
 import com.mapbox.mapboxsdk.location.LocationComponentActivationOptions;
 import com.mapbox.mapboxsdk.location.LocationComponentOptions;
@@ -82,6 +83,17 @@ public class MapFragment extends Fragment {
                 //Save reference to Map for later use
                 map = mapboxMap;
 
+                //Set camera, zoom, rotate, and bounds limits
+                map.setMinZoomPreference(18);
+                map.getUiSettings().setRotateGesturesEnabled(false);
+
+//                //Set Camera position
+//                CameraPosition position = new CameraPosition.Builder()
+//                        .tilt(1)
+//                        .build();
+//
+//                //map.setCameraPosition(position);
+
                 mapboxMap.setStyle(new Style.Builder().fromUri("mapbox://styles/briancs/ck9m0yeja0lrx1intmbmdus2g"), new Style.OnStyleLoaded(){
                     @Override
                     public void onStyleLoaded(@NonNull Style style) {
@@ -123,8 +135,8 @@ public class MapFragment extends Fragment {
             locationComponent.activateLocationComponent(locationComponentActivationOptions);
             //Enable to make visible
             locationComponent.setLocationComponentEnabled(true);
-            locationComponent.setCameraMode(CameraMode.TRACKING);
-            locationComponent.setRenderMode(RenderMode.COMPASS);
+            locationComponent.setCameraMode(CameraMode.TRACKING_COMPASS);
+            locationComponent.setRenderMode(RenderMode.NORMAL);
         }else{
             //Show dialog
             ActivityCompat.requestPermissions(getActivity(),
