@@ -14,11 +14,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.mapbox.android.gestures.MoveGestureDetector;
 import com.mapbox.geojson.Feature;
 import com.mapbox.geojson.FeatureCollection;
 import com.mapbox.geojson.Point;
 import com.mapbox.mapboxsdk.Mapbox;
 import com.mapbox.mapboxsdk.camera.CameraPosition;
+import com.mapbox.mapboxsdk.camera.CameraUpdate;
+import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
 import com.mapbox.mapboxsdk.location.LocationComponent;
 import com.mapbox.mapboxsdk.location.LocationComponentActivationOptions;
 import com.mapbox.mapboxsdk.location.LocationComponentOptions;
@@ -48,6 +51,8 @@ public class MapFragment extends Fragment {
     private static final String TAG = MainActivity.class.getSimpleName();
     private TextView stepsSinceOpenedText;
     private TextView totalStepsTakenText;
+
+    private LocationComponent locationComponent;
 
     private Pedometer pedometer;
 
@@ -86,14 +91,8 @@ public class MapFragment extends Fragment {
                 //Set camera, zoom, rotate, and bounds limits
                 map.setMinZoomPreference(18);
                 map.getUiSettings().setRotateGesturesEnabled(false);
-
-//                //Set Camera position
-//                CameraPosition position = new CameraPosition.Builder()
-//                        .tilt(1)
-//                        .build();
-//
-//                //map.setCameraPosition(position);
-
+                map.getUiSettings().setScrollGesturesEnabled(false);
+                
                 mapboxMap.setStyle(new Style.Builder().fromUri("mapbox://styles/briancs/ck9m0yeja0lrx1intmbmdus2g"), new Style.OnStyleLoaded(){
                     @Override
                     public void onStyleLoaded(@NonNull Style style) {
@@ -119,10 +118,12 @@ public class MapFragment extends Fragment {
         if(ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
             //Get location component
             LocationComponent locationComponent = map.getLocationComponent();
+            this.locationComponent = locationComponent;
 
             //Setup location component options
             LocationComponentOptions locationComponentOptions = LocationComponentOptions.builder(getActivity())
                     .foregroundDrawable(R.drawable.wizard)
+                    .accuracyAlpha(0)
                     .build();
 
             //Setup location component activation options
