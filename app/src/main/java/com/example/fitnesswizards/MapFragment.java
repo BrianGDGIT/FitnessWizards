@@ -37,6 +37,7 @@ import com.mapbox.mapboxsdk.style.sources.GeoJsonSource;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 
 
 /**
@@ -62,6 +63,7 @@ public class MapFragment extends Fragment {
 
     //Map images
     private static final String MARKER_SOURCE = "markers-source";
+    private static final String MARKER_LAYER = "markers-style-layer";
     private static final String Book_Marker_Image1 = "book_custom-marker";
 
 
@@ -89,10 +91,11 @@ public class MapFragment extends Fragment {
                 map = mapboxMap;
 
                 //Set camera, zoom, rotate, and bounds limits
-                map.setMinZoomPreference(18);
-                map.getUiSettings().setRotateGesturesEnabled(false);
-                map.getUiSettings().setScrollGesturesEnabled(false);
+                //map.setMinZoomPreference(18);
+                //map.getUiSettings().setRotateGesturesEnabled(false);
+                //map.getUiSettings().setScrollGesturesEnabled(false);
                 
+
                 mapboxMap.setStyle(new Style.Builder().fromUri("mapbox://styles/briancs/ck9m0yeja0lrx1intmbmdus2g"), new Style.OnStyleLoaded(){
                     @Override
                     public void onStyleLoaded(@NonNull Style style) {
@@ -100,12 +103,13 @@ public class MapFragment extends Fragment {
 
                         //Map markers implementation, loading images into map style
                         style.addImage(Book_Marker_Image1, BitmapFactory.decodeResource(MapFragment.this.getResources(), R.drawable.book_02f));
-                        addMarkers(style);
+
 
                         //Save reference to map style
                         mapStyle = style;
 
                         enableLocationComponent();
+                        addMarkers(style);
                     }
                 });
             }
@@ -153,14 +157,29 @@ public class MapFragment extends Fragment {
     private void addMarkers(@NonNull Style loadedMapStyle){
         List<Feature> features = new ArrayList<>();
 
+        //Generate random longitude and latitude from player location within about 2 miles
+        double playerLongitude = locationComponent.getLastKnownLocation().getLongitude();
+        double playerLatitude = locationComponent.getLastKnownLocation().getLatitude();
+
+
+
         /* Source: A data source specifies the geographic coordinate where the image marker gets placed. */
-        features.add(Feature.fromGeometry(Point.fromLngLat(-121.7847, 37.9901)));
+        //Add 10 markers to map
+
+        for (int i = 0; i < 10; i++){
+            double randomLongitude = ThreadLocalRandom.current().nextDouble(playerLongitude - 0.0251, playerLongitude + 0.0251);
+            double randomLatitude = ThreadLocalRandom.current().nextDouble(playerLatitude - 0.0251, playerLatitude + 0.0251);
+            features.add(Feature.fromGeometry(Point.fromLngLat(randomLongitude, randomLatitude)));
+        }
+
 
         loadedMapStyle.addSource(new GeoJsonSource(MARKER_SOURCE, FeatureCollection.fromFeatures(features)));
 
+
         /* Style layer: A style layer ties together the source and
         image and specifies how they are displayed on the map. */
-        loadedMapStyle.addLayer(new SymbolLayer("markers-style-layer", MARKER_SOURCE)
+
+        loadedMapStyle.addLayer(new SymbolLayer(MARKER_LAYER, MARKER_SOURCE)
                 .withProperties(
                         PropertyFactory.iconAllowOverlap(true),
                         PropertyFactory.iconIgnorePlacement(true),
@@ -168,7 +187,7 @@ public class MapFragment extends Fragment {
                         // Adjust the second number of the Float array based on the height of your marker image.
                         // This is because the bottom of the marker should be anchored to the coordinate point, rather
                         // than the middle of the marker being the anchor point on the map.
-                        PropertyFactory.iconOffset(new Float[] {0f, -52f})
+                        PropertyFactory.iconOffset(new Float[]{0f, -52f})
                 ));
     }
 
