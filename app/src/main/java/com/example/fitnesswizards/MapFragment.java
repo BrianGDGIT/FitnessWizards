@@ -12,16 +12,11 @@ import androidx.core.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
-import com.mapbox.android.gestures.MoveGestureDetector;
 import com.mapbox.geojson.Feature;
 import com.mapbox.geojson.FeatureCollection;
 import com.mapbox.geojson.Point;
 import com.mapbox.mapboxsdk.Mapbox;
-import com.mapbox.mapboxsdk.camera.CameraPosition;
-import com.mapbox.mapboxsdk.camera.CameraUpdate;
-import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
 import com.mapbox.mapboxsdk.location.LocationComponent;
 import com.mapbox.mapboxsdk.location.LocationComponentActivationOptions;
 import com.mapbox.mapboxsdk.location.LocationComponentOptions;
@@ -50,22 +45,21 @@ public class MapFragment extends Fragment {
     private static final int MY_PERMISSIONS_REQUEST_ACCESSFINELOCATION = 1;
 
     private static final String TAG = MainActivity.class.getSimpleName();
-    private TextView stepsSinceOpenedText;
-    private TextView totalStepsTakenText;
 
     private LocationComponent locationComponent;
-
-    private Pedometer pedometer;
 
     private MapView mapView;
     private MapboxMap map;
     private Style mapStyle;
 
     //Map images
-    private static final String MARKER_SOURCE = "markers-source";
-    private static final String MARKER_LAYER = "markers-style-layer";
-    private static final String Book_Marker_Image1 = "book_custom-marker";
+    private static final String BOOK_MARKER_SOURCE = "book-markers-source";
+    private static final String BOOK_MARKER_LAYER = "book-markers-style-layer";
+    private static final String BOOK_MARKER_IMAGE1 = "book_custom-marker";
 
+    private static final String STAFF_MARKER_SOURCE = "staff-markers-source";
+    private static final String STAFF_MARKER_LAYER = "staff-markers-style-layer";
+    private static final String STAFF_MARKER_IMAGE1 = "staff_custom-marker";
 
     public MapFragment() {
         // Required empty public constructor
@@ -102,8 +96,8 @@ public class MapFragment extends Fragment {
                         // Map is set up and the style has loaded. Now you can add data or make other map adjustments
 
                         //Map markers implementation, loading images into map style
-                        style.addImage(Book_Marker_Image1, BitmapFactory.decodeResource(MapFragment.this.getResources(), R.drawable.book_02f));
-
+                        style.addImage(BOOK_MARKER_IMAGE1, BitmapFactory.decodeResource(MapFragment.this.getResources(), R.drawable.book_02f));
+                        style.addImage(STAFF_MARKER_IMAGE1, BitmapFactory.decodeResource(MapFragment.this.getResources(), R.drawable.staff_01a));
 
                         //Save reference to map style
                         mapStyle = style;
@@ -118,7 +112,7 @@ public class MapFragment extends Fragment {
     }
 
     private void enableLocationComponent(){
-        //Check to see if permisions are enabled
+        //Check to see if permissions are enabled
         if(ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
             //Get location component
             LocationComponent locationComponent = map.getLocationComponent();
@@ -155,7 +149,8 @@ public class MapFragment extends Fragment {
     }
 
     private void addMarkers(@NonNull Style loadedMapStyle){
-        List<Feature> features = new ArrayList<>();
+        List<Feature> book2Features = new ArrayList<>();
+        List<Feature> staff1Features = new ArrayList<>();
 
         //Generate random longitude and latitude from player location within about 2 miles
         double playerLongitude = locationComponent.getLastKnownLocation().getLongitude();
@@ -164,31 +159,57 @@ public class MapFragment extends Fragment {
 
 
         /* Source: A data source specifies the geographic coordinate where the image marker gets placed. */
-        //Add 10 markers to map
 
-        for (int i = 0; i < 10; i++){
-            double randomLongitude = ThreadLocalRandom.current().nextDouble(playerLongitude - 0.0251, playerLongitude + 0.0251);
-            double randomLatitude = ThreadLocalRandom.current().nextDouble(playerLatitude - 0.0251, playerLatitude + 0.0251);
-            features.add(Feature.fromGeometry(Point.fromLngLat(randomLongitude, randomLatitude)));
+        //Generate Items, returns values for use below
+        int amountBook2 = generateItemAmount();
+        int amountStaff1 = generateItemAmount();
+
+        //Add Book2 to source
+        for (int i = 0; i < amountBook2; i++){
+            double randomLongitude = ThreadLocalRandom.current().nextDouble(playerLongitude - 0.0181, playerLongitude + 0.0181);
+            double randomLatitude = ThreadLocalRandom.current().nextDouble(playerLatitude - 0.0181, playerLatitude + 0.0181);
+            book2Features.add(Feature.fromGeometry(Point.fromLngLat(randomLongitude, randomLatitude)));
         }
+        loadedMapStyle.addSource(new GeoJsonSource(BOOK_MARKER_SOURCE, FeatureCollection.fromFeatures(book2Features)));
 
-
-        loadedMapStyle.addSource(new GeoJsonSource(MARKER_SOURCE, FeatureCollection.fromFeatures(features)));
+        //Add Staff1 to source
+        for (int i =0; i < amountStaff1; i++){
+            double randomLongitude = ThreadLocalRandom.current().nextDouble(playerLongitude - 0.0181, playerLongitude + 0.0181);
+            double randomLatitude = ThreadLocalRandom.current().nextDouble(playerLatitude - 0.0181, playerLatitude + 0.0181);
+            staff1Features.add(Feature.fromGeometry(Point.fromLngLat(randomLongitude, randomLatitude)));
+        }
+        loadedMapStyle.addSource(new GeoJsonSource(STAFF_MARKER_SOURCE, FeatureCollection.fromFeatures(staff1Features)));
 
 
         /* Style layer: A style layer ties together the source and
         image and specifies how they are displayed on the map. */
 
-        loadedMapStyle.addLayer(new SymbolLayer(MARKER_LAYER, MARKER_SOURCE)
+        loadedMapStyle.addLayer(new SymbolLayer(BOOK_MARKER_LAYER, BOOK_MARKER_SOURCE)
                 .withProperties(
                         PropertyFactory.iconAllowOverlap(true),
                         PropertyFactory.iconIgnorePlacement(true),
-                        PropertyFactory.iconImage(Book_Marker_Image1),
+                        PropertyFactory.iconImage(BOOK_MARKER_IMAGE1),
                         // Adjust the second number of the Float array based on the height of your marker image.
                         // This is because the bottom of the marker should be anchored to the coordinate point, rather
                         // than the middle of the marker being the anchor point on the map.
                         PropertyFactory.iconOffset(new Float[]{0f, -52f})
                 ));
+
+        loadedMapStyle.addLayer(new SymbolLayer(STAFF_MARKER_LAYER, STAFF_MARKER_SOURCE)
+                .withProperties(
+                        PropertyFactory.iconAllowOverlap(true),
+                        PropertyFactory.iconIgnorePlacement(true),
+                        PropertyFactory.iconImage(STAFF_MARKER_IMAGE1),
+                        // Adjust the second number of the Float array based on the height of your marker image.
+                        // This is because the bottom of the marker should be anchored to the coordinate point, rather
+                        // than the middle of the marker being the anchor point on the map.
+                        PropertyFactory.iconOffset(new Float[]{0f, -52f})
+        ));
+
+    }
+
+    private int generateItemAmount(){
+        return ThreadLocalRandom.current().nextInt(0, 6);
     }
 
     @Override
