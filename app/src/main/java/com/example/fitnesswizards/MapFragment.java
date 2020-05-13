@@ -17,6 +17,7 @@ import com.mapbox.geojson.Feature;
 import com.mapbox.geojson.FeatureCollection;
 import com.mapbox.geojson.Point;
 import com.mapbox.mapboxsdk.Mapbox;
+import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.location.LocationComponent;
 import com.mapbox.mapboxsdk.location.LocationComponentActivationOptions;
 import com.mapbox.mapboxsdk.location.LocationComponentOptions;
@@ -26,6 +27,9 @@ import com.mapbox.mapboxsdk.maps.MapView;
 import com.mapbox.mapboxsdk.maps.MapboxMap;
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback;
 import com.mapbox.mapboxsdk.maps.Style;
+import com.mapbox.mapboxsdk.plugins.annotation.Symbol;
+import com.mapbox.mapboxsdk.plugins.annotation.SymbolManager;
+import com.mapbox.mapboxsdk.plugins.annotation.SymbolOptions;
 import com.mapbox.mapboxsdk.style.layers.PropertyFactory;
 import com.mapbox.mapboxsdk.style.layers.SymbolLayer;
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource;
@@ -80,7 +84,7 @@ public class MapFragment extends Fragment {
         mapView.onCreate(savedInstanceState);
         mapView.getMapAsync(new OnMapReadyCallback() {
             @Override
-            public void onMapReady(@NonNull MapboxMap mapboxMap) {
+            public void onMapReady(@NonNull final MapboxMap mapboxMap) {
                 //Save reference to Map for later use
                 map = mapboxMap;
 
@@ -103,7 +107,7 @@ public class MapFragment extends Fragment {
                         mapStyle = style;
 
                         enableLocationComponent();
-                        addMarkers(style);
+                        addMarkers(mapView, mapboxMap, style);
                     }
                 });
             }
@@ -148,15 +152,19 @@ public class MapFragment extends Fragment {
 
     }
 
-    private void addMarkers(@NonNull Style loadedMapStyle){
+    private void addMarkers(MapView mapView, MapboxMap map, Style style){
+        SymbolManager symbolManager = new SymbolManager(mapView, map, style);
+        symbolManager.setIconAllowOverlap(true);
+        symbolManager.setIconIgnorePlacement(true);
+
+        //Generate long and lat and store in a List
         List<Feature> book2Features = new ArrayList<>();
         List<Feature> staff1Features = new ArrayList<>();
+
 
         //Generate random longitude and latitude from player location within about 2 miles
         double playerLongitude = locationComponent.getLastKnownLocation().getLongitude();
         double playerLatitude = locationComponent.getLastKnownLocation().getLatitude();
-
-
 
         /* Source: A data source specifies the geographic coordinate where the image marker gets placed. */
 
@@ -168,43 +176,27 @@ public class MapFragment extends Fragment {
         for (int i = 0; i < amountBook2; i++){
             double randomLongitude = ThreadLocalRandom.current().nextDouble(playerLongitude - 0.0181, playerLongitude + 0.0181);
             double randomLatitude = ThreadLocalRandom.current().nextDouble(playerLatitude - 0.0181, playerLatitude + 0.0181);
-            book2Features.add(Feature.fromGeometry(Point.fromLngLat(randomLongitude, randomLatitude)));
+            LatLng randomLatLng = new LatLng(randomLatitude, randomLongitude);
+
+            //Add symbols to map using SymbolManager
+            Symbol symbol = symbolManager.create(new SymbolOptions()
+                    .withLatLng(randomLatLng)
+                    .withIconImage(BOOK_MARKER_IMAGE1)
+            );
         }
-        loadedMapStyle.addSource(new GeoJsonSource(BOOK_MARKER_SOURCE, FeatureCollection.fromFeatures(book2Features)));
 
         //Add Staff1 to source
         for (int i =0; i < amountStaff1; i++){
             double randomLongitude = ThreadLocalRandom.current().nextDouble(playerLongitude - 0.0181, playerLongitude + 0.0181);
             double randomLatitude = ThreadLocalRandom.current().nextDouble(playerLatitude - 0.0181, playerLatitude + 0.0181);
-            staff1Features.add(Feature.fromGeometry(Point.fromLngLat(randomLongitude, randomLatitude)));
+            LatLng randomLatLng = new LatLng(randomLatitude, randomLongitude);
+
+            //Add symbols to map using SymbolManager
+            Symbol symbol = symbolManager.create(new SymbolOptions()
+                    .withLatLng(randomLatLng)
+                    .withIconImage(STAFF_MARKER_IMAGE1)
+            );
         }
-        loadedMapStyle.addSource(new GeoJsonSource(STAFF_MARKER_SOURCE, FeatureCollection.fromFeatures(staff1Features)));
-
-
-        /* Style layer: A style layer ties together the source and
-        image and specifies how they are displayed on the map. */
-
-        loadedMapStyle.addLayer(new SymbolLayer(BOOK_MARKER_LAYER, BOOK_MARKER_SOURCE)
-                .withProperties(
-                        PropertyFactory.iconAllowOverlap(true),
-                        PropertyFactory.iconIgnorePlacement(true),
-                        PropertyFactory.iconImage(BOOK_MARKER_IMAGE1),
-                        // Adjust the second number of the Float array based on the height of your marker image.
-                        // This is because the bottom of the marker should be anchored to the coordinate point, rather
-                        // than the middle of the marker being the anchor point on the map.
-                        PropertyFactory.iconOffset(new Float[]{0f, -52f})
-                ));
-
-        loadedMapStyle.addLayer(new SymbolLayer(STAFF_MARKER_LAYER, STAFF_MARKER_SOURCE)
-                .withProperties(
-                        PropertyFactory.iconAllowOverlap(true),
-                        PropertyFactory.iconIgnorePlacement(true),
-                        PropertyFactory.iconImage(STAFF_MARKER_IMAGE1),
-                        // Adjust the second number of the Float array based on the height of your marker image.
-                        // This is because the bottom of the marker should be anchored to the coordinate point, rather
-                        // than the middle of the marker being the anchor point on the map.
-                        PropertyFactory.iconOffset(new Float[]{0f, -52f})
-        ));
 
     }
 
