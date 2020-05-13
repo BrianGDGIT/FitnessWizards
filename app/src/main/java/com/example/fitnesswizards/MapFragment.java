@@ -9,10 +9,17 @@ import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.core.content.ContextCompat;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
+
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
+import com.example.fitnesswizards.db.entity.Player;
+import com.example.fitnesswizards.viewmodel.PlayerViewModel;
 import com.mapbox.geojson.Feature;
 import com.mapbox.geojson.FeatureCollection;
 import com.mapbox.geojson.Point;
@@ -38,6 +45,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
+import static com.mapbox.mapboxsdk.Mapbox.getApplicationContext;
+
 
 /**
  * A simple {@link Fragment} subclass.
@@ -55,6 +64,10 @@ public class MapFragment extends Fragment {
     private MapView mapView;
     private MapboxMap map;
     private Style mapStyle;
+
+    //Used to save LiveData into player object for other uses
+    private PlayerViewModel playerViewModel;
+    Player player;
 
     //Map images
     private static final String BOOK_MARKER_SOURCE = "book-markers-source";
@@ -77,6 +90,8 @@ public class MapFragment extends Fragment {
         Mapbox.getInstance(getActivity(), "pk.eyJ1IjoiYnJpYW5jcyIsImEiOiJjanpidzFkdDQwMDllM21zYTR2cHhlOHM2In0.ugYZLxfaanhI5w3WeGJzwA");
         // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.fragment_map, container, false);
+
+        connectWithData();
 
 
         //Mapbox
@@ -157,14 +172,33 @@ public class MapFragment extends Fragment {
         symbolManager.setIconAllowOverlap(true);
         symbolManager.setIconIgnorePlacement(true);
 
+        //Control what happens when symbols of different types are clicked
+        symbolManager.addClickListener(symbol -> {
+            if(symbol.getIconImage() == BOOK_MARKER_IMAGE1){
+                Toast.makeText(getApplicationContext(), R.string.clicked_book01, Toast.LENGTH_LONG).show();
+                
+                //Display second toast after delay
+                Handler handler = new Handler();
+                handler.postDelayed(new Runnable()
+                {
+                    @Override
+                    public void run()
+                    {
+                        Toast.makeText(getApplicationContext(), R.string.xp_value100, Toast.LENGTH_LONG).show();
+                    }
+                }, 2000);
+
+                player.setPlayerExperience(player.getPlayerExperience() + 100);
+                playerViewModel.update(player);
+                symbolManager.delete(symbol);
+            }else{
+                Toast.makeText(getApplicationContext(), "Clicked on a staff!", Toast.LENGTH_LONG).show();
+            }
+        });
+
         //Generate long and lat and store in a List
         List<Feature> book2Features = new ArrayList<>();
         List<Feature> staff1Features = new ArrayList<>();
-
-
-        //Generate random longitude and latitude from player location within about 2 miles
-        double playerLongitude = locationComponent.getLastKnownLocation().getLongitude();
-        double playerLatitude = locationComponent.getLastKnownLocation().getLatitude();
 
         /* Source: A data source specifies the geographic coordinate where the image marker gets placed. */
 
@@ -174,34 +208,52 @@ public class MapFragment extends Fragment {
 
         //Add Book2 to source
         for (int i = 0; i < amountBook2; i++){
-            double randomLongitude = ThreadLocalRandom.current().nextDouble(playerLongitude - 0.0181, playerLongitude + 0.0181);
-            double randomLatitude = ThreadLocalRandom.current().nextDouble(playerLatitude - 0.0181, playerLatitude + 0.0181);
-            LatLng randomLatLng = new LatLng(randomLatitude, randomLongitude);
-
             //Add symbols to map using SymbolManager
             Symbol symbol = symbolManager.create(new SymbolOptions()
-                    .withLatLng(randomLatLng)
+                    .withLatLng(generateRandomLatLng())
                     .withIconImage(BOOK_MARKER_IMAGE1)
             );
         }
 
         //Add Staff1 to source
         for (int i =0; i < amountStaff1; i++){
-            double randomLongitude = ThreadLocalRandom.current().nextDouble(playerLongitude - 0.0181, playerLongitude + 0.0181);
-            double randomLatitude = ThreadLocalRandom.current().nextDouble(playerLatitude - 0.0181, playerLatitude + 0.0181);
-            LatLng randomLatLng = new LatLng(randomLatitude, randomLongitude);
-
             //Add symbols to map using SymbolManager
             Symbol symbol = symbolManager.create(new SymbolOptions()
-                    .withLatLng(randomLatLng)
+                    .withLatLng(generateRandomLatLng())
                     .withIconImage(STAFF_MARKER_IMAGE1)
             );
         }
 
     }
 
+    private LatLng generateRandomLatLng(){
+        //Generate random longitude and latitude from player location within about 2 miles
+        double playerLongitude = locationComponent.getLastKnownLocation().getLongitude();
+        double playerLatitude = locationComponent.getLastKnownLocation().getLatitude();
+
+        double randomLongitude = ThreadLocalRandom.current().nextDouble(playerLongitude - 0.0181, playerLongitude + 0.0181);
+        double randomLatitude = ThreadLocalRandom.current().nextDouble(playerLatitude - 0.0181, playerLatitude + 0.0181);
+
+        LatLng randomLatLng = new LatLng(randomLatitude, randomLongitude);
+        return randomLatLng;
+    }
+
     private int generateItemAmount(){
         return ThreadLocalRandom.current().nextInt(0, 6);
+    }
+
+    private void connectWithData(){
+        //Connect With data
+        playerViewModel = ViewModelProviders.of(this)
+                .get(PlayerViewModel.class);
+
+        //Add player data observer
+        playerViewModel.getPlayerLiveData().observe(this, new Observer<Player>(){
+            @Override
+            public void onChanged(Player p) {
+                player = p;
+            }
+        });
     }
 
     @Override

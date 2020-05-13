@@ -15,6 +15,10 @@
     <string name="necromancy_text">Necromancy:</string>
     <string name="divination_text">Divination:</string>
     <string name="player_exists">"A character already exists.</string>
+    <string name="clicked_book01">"You found a tome of lost knowledge.</string>
+    <string name="xp_value100">+ 100 xp</string>
+
+
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
