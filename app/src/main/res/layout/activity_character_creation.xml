@@ -40,11 +40,11 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/create_class"/>
-            <EditText
-                android:id="@+id/playerClass_edit_text"
+            <Spinner
+                android:id="@+id/class_selection_spinner"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp" />
+                android:layout_height="wrap_content" />
+
         </LinearLayout>
 
         <Button

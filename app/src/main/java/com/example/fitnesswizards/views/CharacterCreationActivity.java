@@ -7,8 +7,11 @@ import androidx.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.example.fitnesswizards.MainActivity;
@@ -21,12 +24,36 @@ public class CharacterCreationActivity extends AppCompatActivity {
     PlayerViewModel playerViewModel;
     Boolean isPlayerCreated = false;
 
+    String classSelected;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_character_creation);
 
         initPlayerData();
+
+        //Initialize class Spinner
+        Spinner classSpinner = (Spinner) findViewById(R.id.class_selection_spinner);
+        // Create an ArrayAdapter using the string array and a default spinner layout
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.classes_array, android.R.layout.simple_spinner_item);
+        // Specify the layout to use when the list of choices appears
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        // Apply the adapter to the spinner
+        classSpinner.setAdapter(adapter);
+
+        //Create listener to determine what item in the Spinner list was selected
+        classSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                classSelected = classSpinner.getItemAtPosition(i).toString();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
 
         Button createButton = findViewById(R.id.creation_create_button);
         createButton.setOnClickListener(new View.OnClickListener() {
@@ -36,13 +63,17 @@ public class CharacterCreationActivity extends AppCompatActivity {
                     Intent intent = new Intent(CharacterCreationActivity.this, MainActivity.class);
                     //Get player creation info from EditText fields
                     EditText playerNameEditText = findViewById(R.id.playerName_edit_text);
-                    EditText playerClassEditText = findViewById(R.id.playerClass_edit_text);
+
                     String playerName = playerNameEditText.getText().toString();
-                    String playerClass = playerClassEditText.getText().toString();
-                    //Put data into intent
-                    intent.putExtra("Player Name", playerName);
-                    intent.putExtra("Player Class", playerClass);
-                    startActivity(intent);
+                    String playerClass = classSelected;
+
+                    //Check if character information is good
+                    if(playerName != null && playerClass != null){
+                        //Put data into intent and send to activity
+                        intent.putExtra("Player Name", playerName);
+                        intent.putExtra("Player Class", playerClass);
+                        startActivity(intent);
+                    }
                 }else{
                     Toast.makeText(getApplicationContext(), R.string.player_exists, Toast.LENGTH_LONG).show();
                 }

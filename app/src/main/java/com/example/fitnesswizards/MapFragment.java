@@ -176,7 +176,7 @@ public class MapFragment extends Fragment {
         symbolManager.addClickListener(symbol -> {
             if(symbol.getIconImage() == BOOK_MARKER_IMAGE1){
                 Toast.makeText(getApplicationContext(), R.string.clicked_book01, Toast.LENGTH_LONG).show();
-                
+
                 //Display second toast after delay
                 Handler handler = new Handler();
                 handler.postDelayed(new Runnable()

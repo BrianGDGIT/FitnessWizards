@@ -18,6 +18,12 @@
     <string name="clicked_book01">"You found a tome of lost knowledge.</string>
     <string name="xp_value100">+ 100 xp</string>
 
+    <string-array name="classes_array">
+        <item>Wizard</item>
+        <item>Necromancer</item>
+    </string-array>
+
+
 
 
     <!-- TODO: Remove or change this placeholder text -->
