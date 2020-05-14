@@ -9,6 +9,7 @@ import androidx.lifecycle.ViewModelProviders;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -19,11 +20,15 @@ import com.example.fitnesswizards.viewmodel.PlayerViewModel;
  * A simple {@link Fragment} subclass.
  */
 public class CharacterFragment extends Fragment {
+    private ImageView playerImageView;
     private TextView playerNameTextView;
     private TextView playerClassTextView;
     private TextView playerLevelTextView;
     private TextView playerExperienceTextView;
+
     private ProgressBar playerExperienceBar;
+
+    String playerClass;
 
     private int PLAYERLEVELEXPREQ = 100;
 
@@ -46,6 +51,7 @@ public class CharacterFragment extends Fragment {
         view = inflater.inflate(R.layout.fragment_character, container, false);
 
         //Set layout elements
+        playerImageView = view.findViewById(R.id.player_imageView);
         playerNameTextView = view.findViewById(R.id.player_name_textView);
         playerClassTextView = view.findViewById(R.id.player_class_textView);
         playerLevelTextView = view.findViewById(R.id.player_level_textView);
@@ -66,7 +72,7 @@ public class CharacterFragment extends Fragment {
             @Override
             public void onChanged(Player player) {
                 String playerName = player.getPlayerName();
-                String playerClass = player.getPlayerClass();
+                playerClass = player.getPlayerClass();
                 int playerLevel = player.getPlayerLevel();
                 int playerExperience = player.getPlayerExperience();
                 int experienceToNextLevel = playerLevel * PLAYERLEVELEXPREQ - playerExperience;
@@ -76,6 +82,13 @@ public class CharacterFragment extends Fragment {
                 playerLevelTextView.setText(Integer.toString(playerLevel));
                 playerExperienceTextView.setText(Integer.toString(playerExperience));
                 playerExperienceBar.setProgress(PLAYERLEVELEXPREQ - experienceToNextLevel);
+
+                //Set class image
+                if(playerClass.equals("Wizard")){
+                    playerImageView.setImageResource(R.drawable.wizard1);
+                }else if(playerClass.equals("Necromancer")){
+                    playerImageView.setImageResource(R.drawable.necro);
+                }
             }
         });
         //Connect with data end
