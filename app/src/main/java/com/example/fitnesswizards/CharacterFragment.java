@@ -85,9 +85,9 @@ public class CharacterFragment extends Fragment {
 
                 //Set class image
                 if(playerClass.equals("Wizard")){
-                    playerImageView.setImageResource(R.drawable.wizard1);
+                    playerImageView.setImageResource(R.drawable.portrait_wizard);
                 }else if(playerClass.equals("Necromancer")){
-                    playerImageView.setImageResource(R.drawable.necro);
+                    playerImageView.setImageResource(R.drawable.portrait_necro);
                 }
             }
         });

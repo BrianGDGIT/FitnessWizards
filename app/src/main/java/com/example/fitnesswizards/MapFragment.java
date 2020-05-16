@@ -21,8 +21,6 @@ import android.widget.Toast;
 import com.example.fitnesswizards.db.entity.Player;
 import com.example.fitnesswizards.viewmodel.PlayerViewModel;
 import com.mapbox.geojson.Feature;
-import com.mapbox.geojson.FeatureCollection;
-import com.mapbox.geojson.Point;
 import com.mapbox.mapboxsdk.Mapbox;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.location.LocationComponent;
@@ -37,9 +35,6 @@ import com.mapbox.mapboxsdk.maps.Style;
 import com.mapbox.mapboxsdk.plugins.annotation.Symbol;
 import com.mapbox.mapboxsdk.plugins.annotation.SymbolManager;
 import com.mapbox.mapboxsdk.plugins.annotation.SymbolOptions;
-import com.mapbox.mapboxsdk.style.layers.PropertyFactory;
-import com.mapbox.mapboxsdk.style.layers.SymbolLayer;
-import com.mapbox.mapboxsdk.style.sources.GeoJsonSource;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -68,6 +63,7 @@ public class MapFragment extends Fragment {
     //Used to save LiveData into player object for other uses
     private PlayerViewModel playerViewModel;
     Player player;
+    int playerDrawable;
 
     //Map images
     private static final String BOOK_MARKER_SOURCE = "book-markers-source";
@@ -120,7 +116,6 @@ public class MapFragment extends Fragment {
 
                         //Save reference to map style
                         mapStyle = style;
-
                         enableLocationComponent();
                         addMarkers(mapView, mapboxMap, style);
                     }
@@ -139,7 +134,7 @@ public class MapFragment extends Fragment {
 
             //Setup location component options
             LocationComponentOptions locationComponentOptions = LocationComponentOptions.builder(getActivity())
-                    .foregroundDrawable(R.drawable.wizard)
+                    .foregroundDrawable(playerDrawable)
                     .accuracyAlpha(0)
                     .build();
 
@@ -252,6 +247,13 @@ public class MapFragment extends Fragment {
             @Override
             public void onChanged(Player p) {
                 player = p;
+                if(player != null){
+                    if(player.getPlayerClass().equals("Wizard")){
+                        playerDrawable = R.drawable.icon_wizard;
+                    }else if(player.getPlayerClass().equals("Necromancer")){
+                        playerDrawable = R.drawable.icon_necro;
+                    }
+                }
             }
         });
     }
