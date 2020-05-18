@@ -13,6 +13,7 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
 import android.os.Handler;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -38,6 +39,7 @@ import com.mapbox.mapboxsdk.plugins.annotation.SymbolOptions;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
 import static com.mapbox.mapboxsdk.Mapbox.getApplicationContext;
@@ -64,6 +66,10 @@ public class MapFragment extends Fragment {
     private PlayerViewModel playerViewModel;
     Player player;
     int playerDrawable;
+
+    //Symbol Management
+    private List<SymbolOptions> savedMarkerList = new ArrayList<>();
+    Random random = new Random();
 
     //Map images
     private static final String BOOK_MARKER_SOURCE = "book-markers-source";
@@ -100,9 +106,9 @@ public class MapFragment extends Fragment {
                 map = mapboxMap;
 
                 //Set camera, zoom, rotate, and bounds limits
-                //map.setMinZoomPreference(18);
-                //map.getUiSettings().setRotateGesturesEnabled(false);
-                //map.getUiSettings().setScrollGesturesEnabled(false);
+                map.setMinZoomPreference(18);
+                map.getUiSettings().setRotateGesturesEnabled(false);
+                map.getUiSettings().setScrollGesturesEnabled(false);
                 
 
                 mapboxMap.setStyle(new Style.Builder().fromUri("mapbox://styles/briancs/ck9m0yeja0lrx1intmbmdus2g"), new Style.OnStyleLoaded(){
@@ -117,7 +123,14 @@ public class MapFragment extends Fragment {
                         //Save reference to map style
                         mapStyle = style;
                         enableLocationComponent();
-                        addMarkers(mapView, mapboxMap, style);
+
+                        //Check if markers have been saved in list and if not then generate Markers
+                        if(savedMarkerList.isEmpty()){
+                            addMarkers(mapView, mapboxMap, style);
+                        }else{
+                            loadMapMarkers(mapView, mapboxMap, style);
+                        }
+
                     }
                 });
             }
@@ -191,10 +204,6 @@ public class MapFragment extends Fragment {
             }
         });
 
-        //Generate long and lat and store in a List
-        List<Feature> book2Features = new ArrayList<>();
-        List<Feature> staff1Features = new ArrayList<>();
-
         /* Source: A data source specifies the geographic coordinate where the image marker gets placed. */
 
         //Generate Items, returns values for use below
@@ -204,21 +213,39 @@ public class MapFragment extends Fragment {
         //Add Book2 to source
         for (int i = 0; i < amountBook2; i++){
             //Add symbols to map using SymbolManager
-            Symbol symbol = symbolManager.create(new SymbolOptions()
+            SymbolOptions options = new SymbolOptions()
                     .withLatLng(generateRandomLatLng())
-                    .withIconImage(BOOK_MARKER_IMAGE1)
-            );
+                    .withIconImage(BOOK_MARKER_IMAGE1);
+
+            //Create the symbol on the map
+            symbolManager.create(options);
+
+            //Add options to list for use when reloading fragment
+            savedMarkerList.add(options);
         }
 
         //Add Staff1 to source
         for (int i =0; i < amountStaff1; i++){
             //Add symbols to map using SymbolManager
-            Symbol symbol = symbolManager.create(new SymbolOptions()
+            SymbolOptions options = new SymbolOptions()
                     .withLatLng(generateRandomLatLng())
-                    .withIconImage(STAFF_MARKER_IMAGE1)
-            );
+                    .withIconImage(STAFF_MARKER_IMAGE1);
+
+            //Create the symbol on the map
+            symbolManager.create(options);
+
+            //Add options to list for use when reloading fragment
+            savedMarkerList.add(options);
         }
 
+    }
+
+    private void loadMapMarkers(MapView mapView, MapboxMap map, Style style){
+        //Fragment already generated markers, thus load from saved list
+        SymbolManager symbolManager = new SymbolManager(mapView, map, style);
+        symbolManager.setIconAllowOverlap(true);
+        symbolManager.setIconIgnorePlacement(true);
+        symbolManager.create(savedMarkerList);
     }
 
     private LatLng generateRandomLatLng(){
@@ -226,15 +253,25 @@ public class MapFragment extends Fragment {
         double playerLongitude = locationComponent.getLastKnownLocation().getLongitude();
         double playerLatitude = locationComponent.getLastKnownLocation().getLatitude();
 
-        double randomLongitude = ThreadLocalRandom.current().nextDouble(playerLongitude - 0.0181, playerLongitude + 0.0181);
-        double randomLatitude = ThreadLocalRandom.current().nextDouble(playerLatitude - 0.0181, playerLatitude + 0.0181);
+//        double randomLongitude = ThreadLocalRandom.current().nextDouble(playerLongitude - 0.0181, playerLongitude + 0.0181);
+//        double randomLatitude = ThreadLocalRandom.current().nextDouble(playerLatitude - 0.0181, playerLatitude + 0.0181);
+
+        //New random implementation
+
+        double longMin = playerLongitude - 0.0181;
+        double longMax = playerLongitude + 0.0181;
+        double latMin = playerLatitude - 0.0181;
+        double latMax = playerLatitude + 0.0181;
+
+        double randomLongitude = longMin + (longMax - longMin) * random.nextDouble();
+        double randomLatitude = latMin + (latMax - latMin) * random.nextDouble();
 
         LatLng randomLatLng = new LatLng(randomLatitude, randomLongitude);
         return randomLatLng;
     }
 
     private int generateItemAmount(){
-        return ThreadLocalRandom.current().nextInt(0, 6);
+        return random.nextInt(6);
     }
 
     private void connectWithData(){

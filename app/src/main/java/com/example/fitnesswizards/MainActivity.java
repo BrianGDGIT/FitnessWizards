@@ -47,7 +47,12 @@ public class MainActivity extends AppCompatActivity {
     //Initiate fragment manager
     final FragmentManager fragmentManager = getSupportFragmentManager();
 
+    //Fragments
+    Fragment mapFragment;
+    Fragment characterFragment;
 
+    //Fragment saved state
+    Fragment.SavedState savedState;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,7 +66,9 @@ public class MainActivity extends AppCompatActivity {
         Database.getDatabase(this).createPlayer(createdPlayer);
 
         //Set initial fragment in view
-        Fragment mapFragment = new MapFragment();
+        mapFragment = new MapFragment();
+        characterFragment = new CharacterFragment();
+
         commitTransaction(mapFragment);
 
         //Buttons
@@ -70,7 +77,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 //Commit character fragment
-                Fragment characterFragment = new CharacterFragment();
                 commitTransaction(characterFragment);
             }
         });
@@ -79,9 +85,8 @@ public class MainActivity extends AppCompatActivity {
         exploreButton.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-                //Commit character fragment
-                Fragment characterFragment = new MapFragment();
-                commitTransaction(characterFragment);
+                //Commit Map Fragment
+                commitTransaction(mapFragment);
             }
         });
 
