@@ -12,6 +12,7 @@ import androidx.lifecycle.ViewModelProviders;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -20,6 +21,9 @@ import com.example.fitnesswizards.db.Database;
 import com.example.fitnesswizards.db.entity.Player;
 import com.example.fitnesswizards.viewmodel.PlayerViewModel;
 import com.example.fitnesswizards.views.CharacterCreationActivity;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 
 public class MainActivity extends AppCompatActivity {
     //Permissions constant
@@ -54,10 +58,26 @@ public class MainActivity extends AppCompatActivity {
     //Fragment saved state
     Fragment.SavedState savedState;
 
+    //Google Play
+    GoogleSignInClient googleSignInClient;
+    private static final int RC_SIGN_IN = 9001;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        //Create Google Play Client
+        googleSignInClient = GoogleSignIn.getClient(this,
+                new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_GAMES_SIGN_IN).build());
+
+        //Sign in if Sign in button was clicked
+        if(getIntent().getIntExtra("Sign In", -1) == 1){
+            startSignInIntent();
+            Log.d(TAG, "startSignInIntent()");
+        }else if(getIntent().getIntExtra("Sign In", 1) == 2){
+            signOut();
+        }
 
         //Create Player
         Player createdPlayer = new Player();
@@ -69,7 +89,7 @@ public class MainActivity extends AppCompatActivity {
         mapFragment = new MapFragment();
         characterFragment = new CharacterFragment();
 
-        commitTransaction(mapFragment);
+        //commitTransaction(characterFragment);
 
         //Buttons
         characterButton = (Button) findViewById(R.id.character_button);
@@ -125,9 +145,6 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
-
-
-
     }
 
     private void commitTransaction(Fragment fragment){
@@ -157,6 +174,14 @@ public class MainActivity extends AppCompatActivity {
 
     public Database getDatabase(){
         return Database.getDatabase(this);
+    }
+
+    private void startSignInIntent(){
+        startActivityForResult(googleSignInClient.getSignInIntent(), RC_SIGN_IN);
+    }
+
+    private void signOut(){
+        googleSignInClient.signOut();
     }
 
     @Override

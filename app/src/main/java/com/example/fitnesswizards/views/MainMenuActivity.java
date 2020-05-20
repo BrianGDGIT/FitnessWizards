@@ -12,6 +12,7 @@ import com.example.fitnesswizards.R;
 
 public class MainMenuActivity extends AppCompatActivity {
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -31,6 +32,26 @@ public class MainMenuActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(MainMenuActivity.this, MainActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        Button sign_out_Button = findViewById(R.id.sign_out_button);
+        sign_out_Button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(MainMenuActivity.this, MainActivity.class);
+                intent.putExtra("Sign In", 2);
+                startActivity(intent);
+            }
+        });
+
+        Button sign_in_Button = findViewById(R.id.sign_in_button);
+            sign_in_Button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(MainMenuActivity.this, MainActivity.class);
+                intent.putExtra("Sign In", 1);
                 startActivity(intent);
             }
         });

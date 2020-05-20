@@ -41,4 +41,8 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-extensions:$rootProject.archLifecycleVersion"
     annotationProcessor "androidx.lifecycle:lifecycle-compiler:$rootProject.archLifecycleVersion"
 
+    //Google Play services
+    implementation "com.google.android.gms:play-services-auth:18.0.0"
+    implementation "com.google.android.gms:play-services-games:19.0.0"
+
 }

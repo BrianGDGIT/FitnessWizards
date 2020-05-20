@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Fitness Wizards</string>
+    <string name="app_name">Fantasy World</string>
     <string name="create_character">Create Character</string>
     <string name="load_character">Load Character</string>
     <string name="create_name">Name: </string>
@@ -17,6 +17,8 @@
     <string name="player_exists">"A character already exists.</string>
     <string name="clicked_book01">"You found a tome of lost knowledge.</string>
     <string name="xp_value100">+ 100 xp</string>
+    <string name="sign_in">Sign In</string>
+    <string name="sign_out">Sign Out</string>
 
     <string-array name="classes_array">
         <item>Wizard</item>
