@@ -1,6 +1,9 @@
 package com.example.fitnesswizards;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -13,6 +16,8 @@ import androidx.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -20,10 +25,15 @@ import android.widget.TextView;
 import com.example.fitnesswizards.db.Database;
 import com.example.fitnesswizards.db.entity.Player;
 import com.example.fitnesswizards.viewmodel.PlayerViewModel;
-import com.example.fitnesswizards.views.CharacterCreationActivity;
+import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.auth.api.signin.GoogleSignInResult;
+import com.google.android.gms.games.Games;
+import com.google.android.gms.games.LeaderboardsClient;
+import com.google.android.gms.tasks.OnSuccessListener;
 
 public class MainActivity extends AppCompatActivity {
     //Permissions constant
@@ -43,7 +53,6 @@ public class MainActivity extends AppCompatActivity {
     //Used for xp calculation
     int stepOffset = 0;
 
-
     //Buttons
     private Button characterButton;
     private Button exploreButton;
@@ -60,12 +69,20 @@ public class MainActivity extends AppCompatActivity {
 
     //Google Play
     GoogleSignInClient googleSignInClient;
+    GoogleSignInAccount googleSignInAccount;
     private static final int RC_SIGN_IN = 9001;
+
+    LeaderboardsClient leaderboardsClient;
+    private static final int RC_LEADERBOARD_UI = 9004;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        //Set Actionbar
+        Toolbar toolbar = findViewById(R.id.my_toolbar);
+        setSupportActionBar(toolbar);
 
         //Create Google Play Client
         googleSignInClient = GoogleSignIn.getClient(this,
@@ -79,6 +96,11 @@ public class MainActivity extends AppCompatActivity {
             signOut();
         }
 
+        //Obtain Google Play Leaderboard
+//        if(googleSignInAccount != null){
+//////            Games.getLeaderboardsClient(this, googleSignInAccount);
+//////        }
+
         //Create Player
         Player createdPlayer = new Player();
         createdPlayer.setPlayerName(getIntent().getStringExtra("Player Name"));
@@ -89,7 +111,7 @@ public class MainActivity extends AppCompatActivity {
         mapFragment = new MapFragment();
         characterFragment = new CharacterFragment();
 
-        //commitTransaction(characterFragment);
+        commitTransaction(characterFragment);
 
         //Buttons
         characterButton = (Button) findViewById(R.id.character_button);
@@ -184,10 +206,66 @@ public class MainActivity extends AppCompatActivity {
         googleSignInClient.signOut();
     }
 
+    private void showLeaderboard(){
+        Games.getLeaderboardsClient(this, GoogleSignIn.getLastSignedInAccount(this))
+                .getLeaderboardIntent(getString(R.string.leaderboard_id))
+                .addOnSuccessListener(new OnSuccessListener<Intent>() {
+                    @Override
+                    public void onSuccess(Intent intent) {
+                        startActivityForResult(intent, RC_LEADERBOARD_UI);
+                    }
+                });
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        //Save GoogleSignIn Account, for use with leaderboard etc.
+        if(requestCode == RC_SIGN_IN){
+            GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
+            if(result.isSuccess()){
+                googleSignInAccount = result.getSignInAccount();
+            }else{
+                String message = result.getStatus().getStatusMessage();
+                if(message == null || message.isEmpty() ){
+                    message = getString(R.string.sign_in_error);
+                }
+                new AlertDialog.Builder(this).setMessage(message)
+                        .setNeutralButton(android.R.string.ok, null).show();
+            }
+        }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.main_toolbar_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        switch(item.getItemId()){
+            case R.id.toolbar_leaderboard:
+                showLeaderboard();
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
     @Override
     protected void onResume() {
         super.onResume();
         pedometer.registerSensorListener();
     }
 
+    @Override
+    protected void onStop() {
+        super.onStop();
+
+    }
 }

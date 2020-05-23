@@ -19,15 +19,11 @@
     <string name="xp_value100">+ 100 xp</string>
     <string name="sign_in">Sign In</string>
     <string name="sign_out">Sign Out</string>
+    <string name="sign_in_error">Error signing in.</string>
+    <string name="toolbar_leaderboard">Book of Lost Lore</string>
 
     <string-array name="classes_array">
         <item>Wizard</item>
         <item>Necromancer</item>
     </string-array>
-
-
-
-
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
