@@ -5,12 +5,12 @@ import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
-@Entity(tableName = "spellbook")
-public class Spellbook {
+@Entity(tableName = "spells")
+public class Spell {
     @PrimaryKey(autoGenerate = true)
     @NonNull
     @ColumnInfo(name = "id")
-    private int spellbookID;
+    private int spellID;
 
     private String name;
     private int level;
